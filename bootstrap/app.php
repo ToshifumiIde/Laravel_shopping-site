@@ -11,13 +11,14 @@
 |
 */
 
+// 以下サービスコンテナを使用してインスタンスを生成
 $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
 /*
 |--------------------------------------------------------------------------
-| Bind Important Interfaces
+| Bind Important Interfaces（サービスコンテナに幾つかのサービスを登録）
 |--------------------------------------------------------------------------
 |
 | Next, we need to bind some important interfaces into the container so
@@ -26,6 +27,7 @@ $app = new Illuminate\Foundation\Application(
 |
 */
 
+//1度だけインスタンス化するメソッド
 $app->singleton(
     Illuminate\Contracts\Http\Kernel::class,
     App\Http\Kernel::class
