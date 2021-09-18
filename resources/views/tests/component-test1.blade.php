@@ -8,5 +8,6 @@
         content="本文1"
         :message="$message"
     />
-    <x-tests.card title="タイト2" />
+    <x-tests.card title="タイトル2" />
+    <x-tests.card title="CSSをここだけ変更したい" class="bg-red-300"/>
 </x-test.app>
