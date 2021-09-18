@@ -8,4 +8,5 @@
         content="本文1"
         :message="$message"
     />
+    <x-tests.card title="タイト2" />
 </x-test.app>
