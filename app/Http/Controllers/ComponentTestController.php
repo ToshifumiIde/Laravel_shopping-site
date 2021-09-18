@@ -8,10 +8,12 @@ class ComponentTestController extends Controller
 {
     //
     public function showComponent1(){
-        return view("tests.component-test1");
+        $message = "コントローラーで作成した1";
+        return view("tests.component-test1",compact("message"));
     }
 
     public function showComponent2(){
-        return view("tests.component-test2");
+        $message="コントローラーで作成した2";
+        return view("tests.component-test2",compact("message"));
     }
 }
