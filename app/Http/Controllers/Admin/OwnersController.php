@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Owner; //Eloquent エロクアント
 use Illuminate\Support\Facades\DB; //QueryBuilder クエリビルダ
 use Carbon\Carbon; //日付関連のライブラリはCarbonで対応可能
+use Illuminate\Support\Facades\Hash;
 
 class OwnersController extends Controller {
     /**
@@ -54,10 +55,34 @@ class OwnersController extends Controller {
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
+     * Request $request = リクエストクラスの$requestはメソッドインジェクションと呼ばれる
+     * メソッドインジェクションを使わない場合
+     * $request = new Request();インスタンスを生成し
+     * $request->all();インスタンスを生成してからallメソッドを呼ぶ手順が必要
+     * formで渡ってきた値を使用する場合、actionの仮引数にメソッドインジェクションである
+     * Request $request を記述するケースがほとんど
      * @return \Illuminate\Http\Response
      */
+
     public function store(Request $request) {
         //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:owners',
+            'password' => 'required|string|confirmed|min:8', // conformed：2つのformがあってるかどうかまとめて確認
+        ]);
+        // バリデーションがOKだったら、Ownerテーブルにデータを登録していく
+        Owner::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            //パスワードはHash::make()で暗号化
+        ]);
+
+        // 登録が無事成功した場合のsessionメッセージを書いていく（今回は->with()メソッドを使用）
+        return redirect()
+            ->route("admin.owners.index")
+            ->with("message","オーナー登録を実施しました。");
     }
 
     /**
