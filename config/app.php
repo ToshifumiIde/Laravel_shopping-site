@@ -12,7 +12,8 @@ return [
     | any other location as required by the application or its packages.
     |
     */
-
+    // .envに記述したAPP_NAMEを参照する
+    // APP_NAMEが空の場合、第二引数を参照する
     'name' => env('APP_NAME', 'Laravel'),
 
     /*
@@ -26,6 +27,8 @@ return [
     |
     */
 
+    // .envファイルのAPP_ENVを参照する
+    // 値がない場合、第二引数の'production'を参照する
     'env' => env('APP_ENV', 'production'),
 
     /*
@@ -39,6 +42,8 @@ return [
     |
     */
 
+    // .envのAPP_DEBUGを参照する
+    // APP_DEBUGが空の場合、第二引数のfalseを参照する
     'debug' => (bool) env('APP_DEBUG', false),
 
     /*
