@@ -14,5 +14,11 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // \App\Models\User::factory(10)->create();
+        // 個別に作成したSeederは$this->call()メソッドで呼び出す必要がある
+        $this->call([
+            AdminSeeder::class,
+            OwnerSeeder::class,
+        ]);
+        // 呼び出し完了したら、php artisan db:seedコマンドで実装する必要あり
     }
 }
