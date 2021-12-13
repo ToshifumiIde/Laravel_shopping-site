@@ -23,18 +23,21 @@ class OwnersController extends Controller {
 
     public function index() {
         // Carbonのライブラリを用いて日付を取得する
-        $date_now = Carbon::now();
-        $date_parse = Carbon::parse(now());
-        echo $date_now->year;
-        echo $date_parse;
-        $e_all = Owner::all(); //Ownerモデルから全データを取得（エロクアント）
-        $q_get = DB::table("owners")->select("name", "created_at")->get();
+        // $date_now = Carbon::now();
+        // $date_parse = Carbon::parse(now());
+        // echo $date_now->year;
+        // echo $date_parse;
+        // $e_all = Owner::all(); //Ownerモデルから全データを取得（エロクアント）
+        // $q_get = DB::table("owners")->select("name", "created_at")->get();
         // $q_first = DB::table("owners")->select("name")->first();
         // $c_test = collect(["name" => "テスト"]);
         // var_dump($q_first);
         // dd($e_all, $q_get, $q_first, $c_test);
 
-        return view("admin.owner.index", compact("e_all", "q_get"));
+        // エロクアントクラスのスコープ定義演算子からselect()->get()を使用して、name,email,created_atを取得
+        $owners = Owner::select("name", "email", "created_at")->get();
+
+        return view("admin.owner.index", compact("owners"));
     }
 
     /**
@@ -44,6 +47,7 @@ class OwnersController extends Controller {
      */
     public function create() {
         //
+        return view("admin.owner.create");
     }
 
     /**
