@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'users',
         'passwords' => 'users',
     ],
 
@@ -40,6 +40,24 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'users' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'owners' => [
+            'driver' => 'session',
+            'provider' => 'owners',
+        ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admin',
+        ],
+
+        'api' =>[
+            'driver' => 'token',
+            'provider' => 'users',
+            'hash' => false,
+        ],
     ],
 
     /*
@@ -63,6 +81,16 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'owners' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Owner::class,
+            // 以前作成したOwner.phpを参照
+        ],
+        'admin' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+            // 以前作成したAdmin.phpを参照
         ],
 
         // 'users' => [
@@ -88,10 +116,22 @@ return [
 
     'passwords' => [
         'users' => [
-            'provider' => 'users',
+            'provider' => 'users',  // providersの配列に格納されている名称と統一
             'table' => 'password_resets',
-            'expire' => 60,
-            'throttle' => 60,
+            'expire' => 60,         // 60日間
+            'throttle' => 60,       // pass失敗時のログイン制限（秒）
+        ],
+        'owners' => [
+            'provider' => 'owners', // providersの配列に格納されている名称と統一
+            'table' => 'owner_password_resets',//migrationで作成したファイル名
+            'expire' => 60,         // 60日間
+            'throttle' => 60,       // pass失敗時のログイン制限（秒）
+        ],
+        'admin' => [
+            'provider' => 'admin',  // providersの配列に格納されている名称と統一
+            'table' => 'admin_password_resets',//migrationで作成したファイル名
+            'expire' => 60,         // 60日間
+            'throttle' => 60,       // pass失敗時のログイン制限（秒）
         ],
     ],
 
