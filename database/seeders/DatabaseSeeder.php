@@ -20,5 +20,6 @@ class DatabaseSeeder extends Seeder
             OwnerSeeder::class,
         ]);
         // 呼び出し完了したら、php artisan db:seedコマンドで実装する必要あり
+        // 
     }
 }

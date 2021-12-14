@@ -36,7 +36,7 @@ class OwnersController extends Controller {
         // dd($e_all, $q_get, $q_first, $c_test);
 
         // エロクアントクラスのスコープ定義演算子からselect()->get()を使用して、name,email,created_atを取得
-        $owners = Owner::select("name", "email", "created_at")->get();
+        $owners = Owner::select("id", "name", "email", "created_at")->get();
 
         return view("admin.owner.index", compact("owners"));
     }
@@ -82,7 +82,7 @@ class OwnersController extends Controller {
         // 登録が無事成功した場合のsessionメッセージを書いていく（今回は->with()メソッドを使用）
         return redirect()
             ->route("admin.owners.index")
-            ->with("message","オーナー登録を実施しました。");
+            ->with("message", "オーナー登録を実施しました。");
     }
 
     /**
@@ -102,7 +102,11 @@ class OwnersController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function edit($id) {
-        //
+        //findOrFail()メソッドにより、渡ってきた$idが存在する場合は変数に格納
+        // 存在しない場合は404 not foundエラーを返却させる
+        $owner = Owner::findOrFail($id);
+        // dd($owner); Owner::findOrFail($id)の確認でdd($owner);実施
+        return view("admin.owner.edit", compact("owner"));
     }
 
     /**
@@ -113,7 +117,21 @@ class OwnersController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
-        //
+        //$ownerをEloquentで生成、findOrFailメソッドを用いて、存在しない場合404 not foundを返却
+        $owner = Owner::findOrFail($id); //Ownerモデルで$idを指定した情報を$ownerに格納可能
+        // ユーザーから取得した情報で$ownerの情報を更新
+        $owner->name = $request->name;
+        $owner->email = $request->email;
+        $owner->password = Hash::make($request->password);
+        // save処理を実施（Eloquentのsave()メソッド使用）
+        $owner->save();
+        // 更新処理が完了したらリダイレクト
+        return redirect()
+            ->route("admin.owners.index")
+            ->with("message", "オーナー情報を更新しました");
+        // リソースコントローラ（php artisan make:controller OwnersController --resources）で作成した
+        // updateはmethod="post"に対応していない、PUT/PATCHのいずれか
+        // したがって、edit.blade.phpのformタグの下に@method("PUT")を今回は追加する必要がある
     }
 
     /**
