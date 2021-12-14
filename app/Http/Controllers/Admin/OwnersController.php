@@ -131,7 +131,8 @@ class OwnersController extends Controller {
             ->with("message", "オーナー情報を更新しました");
         // リソースコントローラ（php artisan make:controller OwnersController --resources）で作成した
         // updateはmethod="post"に対応していない、PUT/PATCHのいずれか
-        // したがって、edit.blade.phpのformタグの下に@method("PUT")を今回は追加する必要がある
+        // したがって今回は、
+        // edit.blade.phpのformタグの下に擬似フォームメソッドの@method("PUT")を追加する必要がある
     }
 
     /**

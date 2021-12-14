@@ -19,7 +19,7 @@
                                 <form method="post" action="{{route('admin.owners.update',["owner"=>$owner->id])}}">
                                     @method("PUT")
                                     {{-- リソースコントローラーで作成したupdateアクションはPOSTをサポートしていない --}}
-                                    {{-- PUTに対応する場合、@method("PUT")でputを指定する必要がある --}}
+                                    {{-- PUTに対応する場合、擬似フォームメソッドの@method("PUT")でputを指定する必要がある --}}
                                     @csrf
                                 <div class="-m-2">
                                     <div class="p-2 w-1/2 mx-auto">
