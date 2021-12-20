@@ -5,9 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Owner; //Eloquent エロクアント
+use App\Models\Shop; //Eloquent エロクアント
 use Illuminate\Support\Facades\DB; //QueryBuilder クエリビルダ
 use Carbon\Carbon; //日付関連のライブラリはCarbonで対応可能
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Hash; //パスワードハッシュ化に必要
+
+use Throwable; //例外処理を投げる場合のPHP7の機能
+use Illuminate\Support\Facades\Log; //例外処理のログ
+
+
 
 class OwnersController extends Controller {
     /**
@@ -37,7 +43,7 @@ class OwnersController extends Controller {
 
         // エロクアントクラスのスコープ定義演算子からselect()->get()を使用して、name,email,created_atを取得
         $owners = Owner::select("id", "name", "email", "created_at")
-            ->paginate(3);//get()メソッドからpaginate()メソッドに切り替え
+            ->paginate(3); //get()メソッドからpaginate()メソッドに切り替え
 
         return view("admin.owners.index", compact("owners"));
     }
@@ -73,13 +79,33 @@ class OwnersController extends Controller {
             'password' => 'required|string|confirmed|min:8',
             // conformed：2つのformがあってるかどうかまとめて確認
         ]);
-        // バリデーションがOKだったら、Ownerテーブルにデータを登録していく
-        Owner::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            //パスワードはHash::make()で暗号化
-        ]);
+
+        // 例外処理の記入
+        try {
+            // トランザクション（複数の処理をまとめた）処理
+            // クロージャー（無名関数、コールバック関数）に引数を渡す場合はuse()内に引数を渡す必要がある
+            DB::transaction(function () use ($request) {
+                // バリデーションがOKだったら、Ownerテーブルにデータを登録していく
+                $owner = Owner::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    //パスワードはHash::make()で暗号化
+                ]);
+                Shop::create([
+                    "owner_id" => $owner->id,
+                    "name" => "店名を入力してください",
+                    "information" => "",
+                    "filename" => "",
+                    "is_selling" => true,
+                ]);
+            }, 2);
+        } catch (Throwable $e) {
+            Log::error($e);
+            throw $e;
+        }
+
+
 
         // 登録が無事成功した場合のsessionメッセージを書いていく（今回は->with()メソッドを使用）
         return redirect()
