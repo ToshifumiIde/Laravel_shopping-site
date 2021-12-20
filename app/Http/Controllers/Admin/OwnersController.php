@@ -36,7 +36,8 @@ class OwnersController extends Controller {
         // dd($e_all, $q_get, $q_first, $c_test);
 
         // エロクアントクラスのスコープ定義演算子からselect()->get()を使用して、name,email,created_atを取得
-        $owners = Owner::select("id", "name", "email", "created_at")->get();
+        $owners = Owner::select("id", "name", "email", "created_at")
+            ->paginate(3);//get()メソッドからpaginate()メソッドに切り替え
 
         return view("admin.owners.index", compact("owners"));
     }
