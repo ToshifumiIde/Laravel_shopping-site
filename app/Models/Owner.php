@@ -14,7 +14,8 @@ class Owner extends Authenticatable
 
         /**
      * The attributes that are mass assignable.
-     *
+     * protected $fillableはホワイトリストとして登録可能
+     * 指定したカラムに対してのみcreate()やupdate()、fillが可能になる
      * @var array
      */
     protected $fillable = [
