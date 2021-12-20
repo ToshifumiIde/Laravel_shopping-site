@@ -25,18 +25,30 @@
                                     <div class="p-2 w-1/2 mx-auto">
                                         <div class="relative">
                                         <label for="name" class="leading-7 text-sm text-gray-600">お名前</label>
-                                        <input type="text" id="name" name="name" placeholder="Name" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-                                        required placeholder="例）山田 太郎"
-                                        value="{{$owner->name}}"
+                                        <input
+                                            type="text"
+                                            id="name"
+                                            name="name"
+                                            placeholder="Name"
+                                            placeholder="例）山田 太郎"
+                                            value="{{$owner->name}}"
+                                            required
+                                            class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                                         >
                                     </div>
                                 </div>
                                 <div class="p-2 w-1/2 mx-auto">
                                     <div class="relative">
                                         <label for="email" class="leading-7 text-sm text-gray-600">メールアドレス</label>
-                                        <input placeholder="Email"type="email" id="email" name="email" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-                                        required placeholder="例）mail@gmail.com"
-                                        value="{{$owner->email}}"
+                                        <input
+                                            placeholder="Email"
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            required
+                                            placeholder="例）mail@gmail.com"
+                                            value="{{$owner->email}}"
+                                            class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                                         >
                                     </div>
                                 </div>
@@ -56,8 +68,17 @@
                                         >
                                     </div>
                                     <div class="relative">
-                                        <label for="password_confirmation" class="leading-7 text-sm text-gray-600">パスワード（確認用）</label>
-                                        <input type="password" id="password_confirmation" name="password_confirmation" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out" required placeholder="最低8文字以上">
+                                        <label for="password_confirmation" class="leading-7 text-sm text-gray-600">
+                                            パスワード（確認用）
+                                        </label>
+                                        <input
+                                            type="password"
+                                            id="password_confirmation"
+                                            name="password_confirmation"
+                                            class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                            required
+                                            placeholder="最低8文字以上"
+                                        >
                                     </div>
                                 </div>
                                 <div class="p-2 w-full flex justify-around mt-4">

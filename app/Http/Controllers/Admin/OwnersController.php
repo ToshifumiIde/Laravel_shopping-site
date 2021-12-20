@@ -38,7 +38,7 @@ class OwnersController extends Controller {
         // エロクアントクラスのスコープ定義演算子からselect()->get()を使用して、name,email,created_atを取得
         $owners = Owner::select("id", "name", "email", "created_at")->get();
 
-        return view("admin.owner.index", compact("owners"));
+        return view("admin.owners.index", compact("owners"));
     }
 
     /**
@@ -48,7 +48,7 @@ class OwnersController extends Controller {
      */
     public function create() {
         //
-        return view("admin.owner.create");
+        return view("admin.owners.create");
     }
 
     /**
@@ -69,7 +69,8 @@ class OwnersController extends Controller {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:owners',
-            'password' => 'required|string|confirmed|min:8', // conformed：2つのformがあってるかどうかまとめて確認
+            'password' => 'required|string|confirmed|min:8',
+            // conformed：2つのformがあってるかどうかまとめて確認
         ]);
         // バリデーションがOKだったら、Ownerテーブルにデータを登録していく
         Owner::create([
@@ -82,7 +83,12 @@ class OwnersController extends Controller {
         // 登録が無事成功した場合のsessionメッセージを書いていく（今回は->with()メソッドを使用）
         return redirect()
             ->route("admin.owners.index")
-            ->with("message", "オーナー登録を実施しました。");
+            ->with([
+                "message" => "オーナー登録を実施しました。",
+                "status" => "info",
+            ]);
+        // with()メソッド一緒に渡す値は連想配列で格納可能
+        // messageと合わせて、表示部分のstatusも渡したいので、連想配列で指定
     }
 
     /**
@@ -106,7 +112,7 @@ class OwnersController extends Controller {
         // 存在しない場合は404 not foundエラーを返却させる
         $owner = Owner::findOrFail($id);
         // dd($owner); Owner::findOrFail($id)の確認でdd($owner);実施
-        return view("admin.owner.edit", compact("owner"));
+        return view("admin.owners.edit", compact("owner"));
     }
 
     /**
@@ -117,7 +123,9 @@ class OwnersController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
-        //$ownerをEloquentで生成、findOrFailメソッドを用いて、存在しない場合404 not foundを返却
+        //$ownerをEloquentで生成
+        // findOrFailメソッドを用いて、存在しない場合404 not foundを返却
+        // 該当する主キー(id)の値が渡されたModelのインスタンスが返却される
         $owner = Owner::findOrFail($id); //Ownerモデルで$idを指定した情報を$ownerに格納可能
         // ユーザーから取得した情報で$ownerの情報を更新
         $owner->name = $request->name;
@@ -128,7 +136,12 @@ class OwnersController extends Controller {
         // 更新処理が完了したらリダイレクト
         return redirect()
             ->route("admin.owners.index")
-            ->with("message", "オーナー情報を更新しました");
+            ->with([
+                "message" => "オーナー情報を更新しました",
+                "status"  => "info",
+            ]);
+        // ->with()メソッドを使うと、sessionメッセージを渡すことが可能
+        // messageと合わせて、表示箇所の背景色を変更するためのstatusを同時に渡す
         // リソースコントローラ（php artisan make:controller OwnersController --resources）で作成した
         // updateはmethod="post"に対応していない、PUT/PATCHのいずれか
         // したがって今回は、
@@ -142,6 +155,31 @@ class OwnersController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
-        //
+        // 出力確認
+        // dd("削除処理");
+        // テーブルに対し、論理削除を実施する
+        // findOrFail()メソッドを使用、
+        // 存在する場合主キー(値)の値が渡されたOwnerModelのインスタンスが返却される
+        // Eloquentの->delete()をチェーンメソッドで繋いで削除実施
+        Owner::findOrFail($id)->delete();
+        return redirect()
+            ->route("admin.owners.index")
+            ->with([
+                "message" => "指定したidのオーナー情報を削除しました。",
+                "status" => "alert",
+            ]);
+        // with()メソッドでsessionを渡す
+        // 今回はmessageの背景色も変更したいので、連想配列で指定する
+        // view側での->with()で指定したsessionの取得方法は、session(”キー名”)で取得可能
+    }
+
+    // 以下、サブスク解除や年会費未払いなどでのソフトデリート（論理削除）を実施する
+    public function expiredOwnerIndex() {
+        $expiredOwners = Owner::onlyTrashed()->get(); //onlyTrashed()で期限切れのユーザーのみ取得可能
+        return view("admin.expired-owners", compact("expiredOwners"));
+    }
+    public function expiredOwnerDestroy($id) {
+        Owner::onlyTrashed()->findOrFail($id)->forceDelete();
+        return redirect()->route("admin.expired-owners.index");
     }
 }
