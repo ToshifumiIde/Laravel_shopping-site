@@ -30,6 +30,16 @@ Route::get('/', function () {
 Route::resource("owners", OwnersController::class)
     ->middleware("auth:admin");
 
+
+// 論理削除（月額課金制、年会費制などで利用期限が過ぎた人などの処理）
+Route::prefix("expired-owners")
+    ->middleware("auth:admin") //必ずmiddleware()を経由してauth:adminの確認をとる
+    ->group(function () {   //group()内でクロージャーを用いること、でRouteを複数渡せる
+        Route::get("index", [OwnersController::class, "expiredOwnerIndex"])->name("expired-owners.index");
+        Route::post("destroy/{owner}", [OwnersController::class, "expiredOwnerDestroy"])->name("expired-owners.destroy");
+    });
+
+
 Route::get('/dashboard', function () {
     return view('admin.dashboard');
 })->middleware(['auth:admin'])->name('dashboard');
