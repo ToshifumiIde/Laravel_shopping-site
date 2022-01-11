@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Owner;
 use App\Models\Shop;
 use App\Http\Controllers\Controller;
 // php artisan make:request UploadRequestで生成したUploadRequest.phpの読み込み
-use App\Http\Requests\UploadImageRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\SUpport\Facades\Storage;
+use Illuminate\Support\Facades\Storage;
 // 画像のリサイズ機能の追加（composer.jsonの"require"にInterventionが追加されていることを確認し、config/app.phpに2つ設定追加）
 use InterventionImage;
+use App\Http\Requests\UploadImageRequest;
+// サービスへの切り離しを行ったアクションを呼び出す
+use App\Services\ImageService;
+
 
 
 class ShopController extends Controller {
@@ -68,26 +71,31 @@ class ShopController extends Controller {
         // 取得したimageFileのnull判定と、念の為アップロードできているか確認を実行
         // if (!is_null($imageFile) && $imageFile->isValid()) {
         //    // アップロードできている場合、imageFileをstorage/app/public/shopsに格納
-            // Storage::putFile("public/shops", $imageFile);
+        // Storage::putFile("public/shops", $imageFile);
         // }
         // return redirect()->route("owner.shops.index");
 
         // 2.Laravel側でInterventionImageを使用してリサイズする場合
+        // $imageFile = $request->image;
+        // if(!is_null($imageFile) && $imageFile->isValid()){
+        // ファイル名をランダムIDに変更し、ファイル拡張子を取得して結合
+        // $fileName        = uniqid(rand() . "_");         //ランダムIDを生成
+        // $extension       = $imageFile->extension();      //拡張子を取得
+        // $fileNameToStore = $fileName . "." . $extension; //名前の結合
+        // ファイルリサイズ処理
+        // $resizedImage    = InterventionImage::make($imageFile)->resize(1920 , 1080)->encode();
+
+        // 出力確認：dd()
+        // dd($imageFile , $resizedImage);
+
+        // Storageに保存(shops/と最後の/を忘れないこと)
+        // Storage::put("public/shops/" . $fileNameToStore , $resizedImage);
+        // }
+
+        // 3.サービス(/app/Services/ImageService.php)への切り離しを行って、サービスからアクションを呼び出し
         $imageFile = $request->image;
-
-        if(!is_null($imageFile) && $imageFile->isValid()){
-            // ファイル名をランダムIDに変更し、ファイル拡張子を取得して結合
-            $fileName        = uniqid(rand() . "_");         //ランダムIDを生成
-            $extension       = $imageFile->extension();      //拡張子を取得
-            $fileNameToStore = $fileName . "." . $extension; //名前の結合
-            // ファイルリサイズ処理
-            $resizedImage    = InterventionImage::make($imageFile)->resize(1920 , 1080)->encode();
-
-            // 出力確認：dd()
-            // dd($imageFile , $resizedImage);
-
-            // Storageに保存(shops/と最後の/を忘れないこと)
-            Storage::put("public/shops/" . $fileNameToStore , $resizedImage);
+        if (!is_null($imageFile) && $imageFile->isValid()) {
+            $fileNameToStore = ImageService::upload($imageFile, "shops");
         }
         return redirect()->route("owner.shops.index");
     }
