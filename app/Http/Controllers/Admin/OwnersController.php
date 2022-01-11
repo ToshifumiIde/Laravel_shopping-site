@@ -23,6 +23,7 @@ class OwnersController extends Controller {
      */
     // コントローラー側でも認証確認する
     // コントローラーの__construct(){}メソッド内でミドルウェアを指定可能
+    // __construct(){}メソッドはこのクラスのインスタンスを生成した際に、actionの実行前に必ず実行される
     // 中で$this->middleware("auth:admin")で指定可能
     public function __construct() {
         $this->middleware("auth:admin");
@@ -74,8 +75,8 @@ class OwnersController extends Controller {
     public function store(Request $request) {
         //
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:owners',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:owners',
             'password' => 'required|string|confirmed|min:8',
             // conformed：2つのformがあってるかどうかまとめて確認
         ]);
@@ -87,17 +88,17 @@ class OwnersController extends Controller {
             DB::transaction(function () use ($request) {
                 // バリデーションがOKだったら、Ownerテーブルにデータを登録していく
                 $owner = Owner::create([
-                    'name' => $request->name,
-                    'email' => $request->email,
+                    'name'     => $request->name,
+                    'email'    => $request->email,
                     'password' => Hash::make($request->password),
                     //パスワードはHash::make()で暗号化
                 ]);
                 Shop::create([
-                    "owner_id" => $owner->id,
-                    "name" => "店名を入力してください",
+                    "owner_id"    => $owner->id,
+                    "name"        => "店名を入力してください",
                     "information" => "",
-                    "filename" => "",
-                    "is_selling" => true,
+                    "filename"    => "",
+                    "is_selling"  => true,
                 ]);
             }, 2);
         } catch (Throwable $e) {
@@ -112,7 +113,7 @@ class OwnersController extends Controller {
             ->route("admin.owners.index")
             ->with([
                 "message" => "オーナー登録を実施しました。",
-                "status" => "info",
+                "status"  => "info",
             ]);
         // with()メソッド一緒に渡す値は連想配列で格納可能
         // messageと合わせて、表示部分のstatusも渡したいので、連想配列で指定
@@ -153,13 +154,16 @@ class OwnersController extends Controller {
         //$ownerをEloquentで生成
         // findOrFailメソッドを用いて、存在しない場合404 not foundを返却
         // 該当する主キー(id)の値が渡されたModelのインスタンスが返却される
-        $owner = Owner::findOrFail($id); //Ownerモデルで$idを指定した情報を$ownerに格納可能
+
+        // Ownerモデルで$idを指定した情報を$ownerに格納可能
         // ユーザーから取得した情報で$ownerの情報を更新
-        $owner->name = $request->name;
-        $owner->email = $request->email;
+        // ->save()で保存処理を実施（Eloquentのsave()メソッド使用）
+        $owner           = Owner::findOrFail($id);
+        $owner->name     = $request->name;
+        $owner->email    = $request->email;
         $owner->password = Hash::make($request->password);
-        // save処理を実施（Eloquentのsave()メソッド使用）
         $owner->save();
+
         // 更新処理が完了したらリダイレクト
         return redirect()
             ->route("admin.owners.index")

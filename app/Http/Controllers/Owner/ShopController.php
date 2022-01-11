@@ -66,6 +66,14 @@ class ShopController extends Controller {
     // app/Http/Requests/UploadImageRequest.phpで生成したRequestの取得を行う
     // この場合、Request型をUploadImageRequestに変更する
     public function update(UploadImageRequest $request, $id) {
+        // 入力値のバリデーション
+        $request->validate([
+            'name' => 'required|string|max:50',
+            'information' => 'required|string|max:1000',
+            'is_selling' => 'required',
+            // conformed：2つのformがあってるかどうかまとめて確認
+        ]);
+
         // 1.Laravel側でリサイズしないパターン（ユーザーにリサイズしてもらう場合）
         // $imageFile = $request->image;
         // 取得したimageFileのnull判定と、念の為アップロードできているか確認を実行
@@ -95,8 +103,23 @@ class ShopController extends Controller {
         // 3.サービス(/app/Services/ImageService.php)への切り離しを行って、サービスからアクションを呼び出し
         $imageFile = $request->image;
         if (!is_null($imageFile) && $imageFile->isValid()) {
+            // 画像の保存処理
             $fileNameToStore = ImageService::upload($imageFile, "shops");
         }
-        return redirect()->route("owner.shops.index");
+
+        // DBへの入力値の保存処理
+        // 最後にEloquentの$shop->save();を加えないとsave()されないため注意
+        $shop              = Shop::findOrFail($id);
+        $shop->name        = $request->name;
+        $shop->information = $request->information;
+        $shop->is_selling  = $request->is_selling;
+        if(!Is_null($imageFile) && $imageFile->isValid()){
+            $shop->filename = $fileNameToStore;
+        }
+        $shop->save();
+
+        return redirect()
+            ->route("owner.shops.index")
+            ->with(["message" => "店舗情報を更新しました。" , "status" => "info"]);
     }
 }
