@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;//ソフトデリート（論理削除）
 use App\Models\Shop;
+use App\Models\Image;
 
 class Owner extends Authenticatable
 {
@@ -42,7 +43,21 @@ class Owner extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // 以下、Modelのリレーション(hasOne()：1対1、hasMany()：)
+
+    /**
+     * Ownerに関連しているshopの取得(1対1の関係)
+     * 逆の関係もShopModelに記載が必要、Shop.phpではbelongsTo()メソッドを使用
+     */
     public function shop(){
         return $this->hasOne(Shop::class);
+    }
+    /**
+     * Ownerに関連しているimageの取得(1対多)
+     * 逆の関係もImage.phpに記載が必要、Image.phpでは
+     */
+    public function image(){
+        return $this->hasMany(Image::class);
     }
 }

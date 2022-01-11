@@ -26,7 +26,7 @@ class ShopController extends Controller {
         $this->middleware("auth:owners");
         $this->middleware(function ($request, $next) {
             // まずは取得情報を確認
-            // dd($request->route()->parameter("shop")); //文字列でid取得
+            // dd($request->route()->parameter("shop")); //文字列でshopのid取得
             // dd(Auth::id()); //数字でid取得
             $id = $request->route()->parameter("shop"); //shopのid取得
             if (!is_null($id)) {

@@ -65,6 +65,7 @@
                               @endforeach
                             </tbody>
                           </table>
+                          {{-- paginationのリンクの生成 --}}
                           {{$owners->links()}}
                         </div>
                     </section>

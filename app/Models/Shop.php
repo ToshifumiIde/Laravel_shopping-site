@@ -19,6 +19,9 @@ class Shop extends Model {
         "is_selling",
     ];
 
+
+    // Modelの1対1（逆）の所属を定義する場合
+    // return $this->belongsTo()メソッドを使用、引数にはModel名::classを指定
     public function owner() {
         return $this->belongsTo(Owner::class);
     }

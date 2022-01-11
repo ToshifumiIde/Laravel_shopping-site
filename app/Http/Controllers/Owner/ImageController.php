@@ -3,18 +3,41 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Image;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
-class ImageController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+class ImageController extends Controller {
+    // コントローラー側での認証処理
+    // __construct(){}アクションはControllerの処理実行前に必ず実行されるアクション
+    // ここに認証処理を加えることで、どのアクションを実行するにあたっても必ず認証処理が実行される
+
+    public function __construct() {
+        $this->middleware("auth:owners");
+        $this->middleware(function ($request, $next) {
+            $id = $request->route()->parameter("image"); // imageのidを取得
+            if (!is_null($id)) {
+                $imagesOwnerId = Image::findOrFail($id)->owner->id;
+                $imageId       = (int)$imagesOwnerId;
+                $ownerId       = Auth::id();
+                // imageIdとAuth::id()が異なっている場合、404ページに飛ばす
+                if ($imageId !== $ownerId) {
+                    abort(404); //abort()で404ページを返却
+                }
+            }
+            return $next($request);
+        });
+    }
+
+
+    public function index() {
+        // Imageの情報をModelから取得
+        // where文で条件を指定、"owner_id"がAuth::id()に合致するものを取得
+        // 順番はupdated_atが降順、paginate(20)で20件ごとにpaginationを実施
+        $images = Image::where("owner_id", Auth::id())
+            ->orderBy("updated_at", "desc")
+            ->paginate(20);
+        return view("owner.images.index", compact("images"));
     }
 
     /**
@@ -22,8 +45,7 @@ class ImageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
+    public function create() {
         //
     }
 
@@ -33,8 +55,7 @@ class ImageController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         //
     }
 
@@ -44,8 +65,7 @@ class ImageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
+    public function show($id) {
         //
     }
 
@@ -55,8 +75,7 @@ class ImageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
+    public function edit($id) {
         //
     }
 
@@ -67,8 +86,7 @@ class ImageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
+    public function update(Request $request, $id) {
         //
     }
 
@@ -78,8 +96,7 @@ class ImageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
+    public function destroy($id) {
         //
     }
 }
