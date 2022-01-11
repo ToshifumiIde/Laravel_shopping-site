@@ -35,9 +35,9 @@ Route::resource("owners", OwnersController::class)
 
 
 // 論理削除（月額課金制、年会費制などで利用期限が過ぎた人などの処理）
-Route::prefix("expired-owners")
-    ->middleware("auth:admin") //必ずmiddleware()を経由してauth:adminの確認をとる
-    ->group(function () {   //group()内でクロージャーを用いること、でRouteを複数渡せる
+Route::prefix("expired-owners") //prefixをつけることでルーティングの共通部分をまとめることが可能(/expired-owners/index,/expired-owners/destroy/{owner}など)
+    ->middleware("auth:admin")  //必ずmiddleware()を経由してauth:adminの確認をとる
+    ->group(function () {       //group()内でクロージャーを用いること、でRouteを複数渡せる
         Route::get("index", [OwnersController::class, "expiredOwnerIndex"])->name("expired-owners.index");
         Route::post("destroy/{owner}", [OwnersController::class, "expiredOwnerDestroy"])->name("expired-owners.destroy");
     });
