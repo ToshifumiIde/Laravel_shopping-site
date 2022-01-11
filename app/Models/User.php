@@ -14,7 +14,8 @@ class User extends Authenticatable
 
     /**
      * The attributes that are mass assignable.
-     *
+     *  ホワイトリストとして利用可能、指定したカラムに対してのみcreate()やupdate()、fill()が可能となる
+     *  以下の場合、name,email,passwordはユーザーからの入力が反映される
      * @var array
      */
     protected $fillable = [

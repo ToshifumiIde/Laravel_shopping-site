@@ -29,9 +29,10 @@ use Illuminate\Support\Facades\Route;
 // });
 
 
+
 Route::resource("owners", OwnersController::class)
     ->middleware("auth:admin")
-    ->except(["show"]); //except()メソッドでCOntroller内のshow()メソッドを除外
+    ->except(["show"]); //except()メソッドでController内のshow()メソッドを除外
 
 
 // 論理削除（月額課金制、年会費制などで利用期限が過ぎた人などの処理）
