@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\SUpport\Facades\Storage;
+// 画像のリサイズ機能の追加（composer.jsonの"require"にInterventionが追加されていることを確認し、config/app.phpに2つ設定追加）
+use InterventionImage;
 
 class ShopController extends Controller {
     // コントローラー側でも認証確認
@@ -38,6 +40,10 @@ class ShopController extends Controller {
         // Shopモデルを使用して、取得したownerIdに該当するshopの情報を取得
         // $shops   = Shop::where("owner_id", $ownerId)->get();
         // 以上の内容は下記にまとめることも可能
+
+        // PHPの情報を確認する関数：phpinfo();
+        // phpinfo();
+
         $shops = Shop::where("owner_id", Auth::id())->get();
 
         return view("owner.shops.index", compact("shops"));
@@ -51,12 +57,31 @@ class ShopController extends Controller {
         return view("owner.shops.edit", compact("shop"));
     }
     public function update(Request $request, $id) {
-        // Laravel側でリサイズしないパターン（ユーザーにリサイズしてもらう場合）
-        $imageFile = $request->image;
+        // 1.Laravel側でリサイズしないパターン（ユーザーにリサイズしてもらう場合）
+        // $imageFile = $request->image;
         // 取得したimageFileのnull判定と、念の為アップロードできているか確認を実行
-        if (!is_null($imageFile) && $imageFile->isValid()) {
-            //アップロードできている場合、imageFileをstorage/app/public/shopsに格納
-            Storage::putFile("public/shops", $imageFile);
+        // if (!is_null($imageFile) && $imageFile->isValid()) {
+        //    // アップロードできている場合、imageFileをstorage/app/public/shopsに格納
+            // Storage::putFile("public/shops", $imageFile);
+        // }
+        // return redirect()->route("owner.shops.index");
+
+        // 2.Laravel側でInterventionImageを使用してリサイズする場合
+        $imageFile = $request->image;
+
+        if(!is_null($imageFile) && $imageFile->isValid()){
+            // ファイル名をランダムIDに変更し、ファイル拡張子を取得して結合
+            $fileName        = uniqid(rand() . "_");         //ランダムIDを生成
+            $extension       = $imageFile->extension();      //拡張子を取得
+            $fileNameToStore = $fileName . "." . $extension; //名前の結合
+            // ファイルリサイズ処理
+            $resizedImage    = InterventionImage::make($imageFile)->resize(1920 , 1080)->encode();
+
+            // 出力確認：dd()
+            // dd($imageFile , $resizedImage);
+
+            // Storageに保存(shops/と最後の/を忘れないこと)
+            Storage::put("public/shops/" . $fileNameToStore , $resizedImage);
         }
         return redirect()->route("owner.shops.index");
     }
