@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 class LoginRequest extends FormRequest {
     /**
      * Determine if the user is authorized to make this request.
-     *
+     * 認証されたユーザーが使用可能かどうかを記述、基本的にtrueを設定
      * @return bool
      */
     public function authorize() {

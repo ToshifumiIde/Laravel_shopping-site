@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Owner;
 
 use App\Models\Shop;
 use App\Http\Controllers\Controller;
+// php artisan make:request UploadRequestで生成したUploadRequest.phpの読み込み
+use App\Http\Requests\UploadImageRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\SUpport\Facades\Storage;
 // 画像のリサイズ機能の追加（composer.jsonの"require"にInterventionが追加されていることを確認し、config/app.phpに2つ設定追加）
 use InterventionImage;
+
 
 class ShopController extends Controller {
     // コントローラー側でも認証確認
@@ -56,7 +59,10 @@ class ShopController extends Controller {
         $shop = Shop::findOrFail($id);
         return view("owner.shops.edit", compact("shop"));
     }
-    public function update(Request $request, $id) {
+
+    // app/Http/Requests/UploadImageRequest.phpで生成したRequestの取得を行う
+    // この場合、Request型をUploadImageRequestに変更する
+    public function update(UploadImageRequest $request, $id) {
         // 1.Laravel側でリサイズしないパターン（ユーザーにリサイズしてもらう場合）
         // $imageFile = $request->image;
         // 取得したimageFileのnull判定と、念の為アップロードできているか確認を実行
