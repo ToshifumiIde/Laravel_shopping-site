@@ -15,19 +15,22 @@
                                     新規登録する
                                 </button>
                             </div>
-                    @foreach($images as $image)
-                    <div class="w-1/4 p-4">
-                    <a href="{{route('owner.images.edit' , ['image' => $image->id])}}">
-                        <div class="border rounded-md p-4">
+                            <div class="flex flex-wrap">
 
-                            <div class="text-xl">
-                                {{$iamge->title}}
-                            </div>
-                            <x-thumbnail :filename="$shop->filename" type="products"/>
-                        </div>
-                    </a>
-                    </div>
-                    @endforeach
+                                @foreach($images as $image)
+                                <div class="w-1/4 p-4">
+                                    <a href="{{route('owner.images.edit' , ['image' => $image->id])}}">
+                                        <div class="border rounded-md p-4">
+
+                                            <div class="text-xl">
+                                                {{$image->title}}
+                                            </div>
+                                            <x-thumbnail :filename="$image->filename" type="products"/>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    @endforeach
+                                </div>
                     {{-- paginationのリンクの生成 --}}
                     {{$images->links()}}
                 </div>
