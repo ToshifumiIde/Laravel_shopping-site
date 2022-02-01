@@ -8,6 +8,7 @@ use App\Services\ImageService;
 use App\Models\Image;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller {
     // コントローラー側での認証処理
@@ -114,6 +115,32 @@ class ImageController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
+        // データを削除する前に、
+        // 指定したidのインスタンスを取得
+        $image = Image::findOrFail($id);
         //
+        $filePath = "public/products/"  . $image->filename;
+
+        if(Storage::exists($filePath)){
+            Storage::delete($filePath);
+        }
+
+        // 出力確認
+        // dd("削除処理");
+        // テーブルに対し、論理削除を実施する
+        // findOrFail()メソッドを使用、
+        // 存在する場合主キー(値)の値が渡されたOwnerModelのインスタンスが返却される
+        // Eloquentの->delete()をチェーンメソッドで繋いで、imageの削除実施
+        Image::findOrFail($id)->delete();
+        return redirect()
+            ->route("owner.images.index")
+            ->with([
+                "message" => "画像を削除しました。",
+                "status" => "alert",
+            ]);
+        // with()メソッドでsessionを渡す
+        // 今回はmessageの背景色も変更したいので、連想配列で指定する
+        // view側での->with()で指定したsessionの取得方法は、session(”キー名”)で取得可能
+
     }
 }
