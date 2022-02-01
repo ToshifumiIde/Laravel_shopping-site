@@ -30,7 +30,9 @@
                                     </div>
                                     <div class="p-2 w-1/2 mx-auto">
                                         <div class="relative">
-                                            <label for="information" class="leading-7 text-sm text-gray-600">店舗情報　※必須</label>
+                                            <label for="information" class="leading-7 text-sm text-gray-600">
+                                                店舗情報　※必須
+                                            </label>
                                             <textarea
                                                 id="information"
                                                 name="information"

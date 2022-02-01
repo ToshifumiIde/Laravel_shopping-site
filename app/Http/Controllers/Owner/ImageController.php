@@ -76,34 +76,35 @@ class ImageController extends Controller {
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id) {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id) {
-        //
+        // 何も認証系での処理を実行していない状況で、どのIDが取得されるか確認
+        // dd(Image::findOrFail($id));
+        // 現状だと、URLにidをベタ打ちすると他のownerのimage情報が取得できてしまう
+        // ミドルウェアを使用して__construct()内にmiddleware(function($request , $next){})でshopの認証を実行
+        $image = Image::findOrFail($id);
+        return view("owner.images.edit", compact("image"));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id) {
-        //
+        // バリデーション処理
+        $request->validate([
+            "title" => "string|max:50",
+        ]);
+        // 対象のidの画像を取得
+        $image = Image::findOrFail($id);
+        // ユーザーから入力されたtitleをimageのtitleに格納
+        $image->title = $request->title;
+        // 格納後、DBに登録
+        $image->save();
+        // 登録完了後、owner/images/index.blade.phpにリダイレクト
+        return redirect()
+            ->route("owner.images.index")
+            ->with(["message" => "画像情報を更新しました。", "status" => "info"]);
     }
 
     /**
