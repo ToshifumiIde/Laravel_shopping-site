@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder {
             AdminSeeder::class,
             OwnerSeeder::class,
             ShopSeeder::class,
+            ImageSeeder::class,
         ]);
         // 呼び出し完了したら、php artisan db:seedコマンドで実装する必要あり
         //
